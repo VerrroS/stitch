@@ -16,12 +16,12 @@ public class AnchorIT : MonoBehaviour
     public EffectMesh effectMesh;
     public GameObject chooseTableButton;
 
-    private GameObject chosen_btable_button = null ; 
 
 
     public Transform rayStartPoint;
     public float rayLength = 10;
     public MRUKAnchor.SceneLabels labelFilter;
+    private GameObject tShirtinstance = null;
 
 
 
@@ -45,7 +45,12 @@ public class AnchorIT : MonoBehaviour
         {
             return;
         }
-        room = MRUK.Instance.GetCurrentRoom();
+        if (room == null)
+        {
+            room = MRUK.Instance.GetCurrentRoom();
+            Debug.Log("searching room");
+            return;
+        }
 
         Vector3 origin = playerHead.position;
         Vector3 direction = playerHead.forward;
@@ -74,19 +79,22 @@ public class AnchorIT : MonoBehaviour
 
             Debug.Log("Destroying current anchor");
         }
-        //else if (curAnchor != newAnchor)
-        //{
-            effectMesh.CreateEffectMesh(newAnchor);
-        //}
 
-        currentAnchor = newAnchor;
-
-        var spawnPosition = newAnchor.transform.position;
-        var spawnRoatation = newAnchor.transform.rotation;
-        if (SpawnObject.gameObject.scene.path == null)
+        if (currentAnchor != newAnchor)
         {
+            if (tShirtinstance != null)
+            {
+                Destroy(tShirtinstance); // Destroy the previous instance if it exists
+            }
+
             Debug.Log("Instantiating");
-            Instantiate(SpawnObject, spawnPosition, spawnRoatation, newAnchor.transform);
+            effectMesh.CreateEffectMesh(newAnchor);
+
+            var spawnPosition = newAnchor.transform.position;
+            var spawnRotation = newAnchor.transform.rotation * Quaternion.Euler(-90, 0, 0);
+
+            tShirtinstance = Instantiate(SpawnObject, spawnPosition, spawnRotation, newAnchor.transform);
+            currentAnchor = newAnchor;
         }
     }
 
