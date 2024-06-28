@@ -16,18 +16,4 @@ public class ButtonCollisionHandler : MonoBehaviour
             }
         }
     }
-
-    private void OnTriggerExit(Collider other)
-    {
-        //print the layer name of what the name of the colided object is
-        Debug.Log("COllided with: " + other.gameObject.name);
-        if (other.gameObject.layer == LayerMask.NameToLayer("Hand"))
-        {
-            if (handMenuController != null)
-            {
-                handMenuController.OnButtonExit(this.gameObject);
-            }
-        }
-    }
-    }
 }
