@@ -10,6 +10,7 @@ public class HandMenuController : MonoBehaviour
     public GameObject lockButton;
     public GameObject GameState;
     private bool isLockActionTriggered = false; 
+    private bool lockIsChangable = true;
 
 
     public void EnableMenu()
@@ -56,8 +57,13 @@ public class HandMenuController : MonoBehaviour
         }
         else if (collidedButton == lockButton)
         {
-            isLockActionTriggered = true; // Set the flag to true to prevent multiple triggers
-            LockAction();
+            if (lockIsChangable)
+            {
+               
+                isLockActionTriggered = true; // Set the flag to true to prevent multiple triggers
+                LockAction();
+                
+            }
         }
     }
     public void OnButtonExit(GameObject collidedButton)
@@ -91,6 +97,15 @@ public class HandMenuController : MonoBehaviour
 
         GameState.GetComponent<GameState>().tableIsLocked = !GameState.GetComponent<GameState>().tableIsLocked;
         lockButton.transform.GetChild(0).GetComponent<TMPro.TextMeshPro>().text = GameState.GetComponent<GameState>().tableIsLocked ? "Unlock" : "Lock";
+        lockIsChangable = false; // Prevent the lock button from being pressed again
+        // wait for 1 second
+        StartCoroutine(WaitForLockAction());
 
+    }
+
+    IEnumerator WaitForLockAction()
+    {
+        yield return new WaitForSeconds(1);
+        lockIsChangable = true; // Allow the lock button to be pressed again
     }
 }

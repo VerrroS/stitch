@@ -115,12 +115,12 @@ public class AnchorIT : MonoBehaviour
 
         curUiCol.placeWorkspace.RemoveListener(OnPlaceWorkspace);
 
-        Vector3 offset = currentAnchor.transform.right * -1.0f + currentAnchor.transform.forward * -0.5f;
+        Vector3 offset = currentAnchor.transform.right * -1.3f + currentAnchor.transform.forward * 0.3f; // Move left and forward
 
         var spawnPosition = currentAnchor.transform.position + offset;
         var spawnRotation = currentAnchor.transform.rotation;
         Destroy(tShirtinstance);
-        tShirtinstance = Instantiate(tableWorkspace, spawnPosition, spawnRotation, currentAnchor.transform);
+        tShirtinstance = Instantiate(tableWorkspace, spawnPosition, spawnRotation * Quaternion.Euler(0, 0, 165), currentAnchor.transform);
 
 
 
