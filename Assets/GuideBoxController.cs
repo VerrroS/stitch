@@ -22,12 +22,12 @@ public class GuideBoxController : MonoBehaviour
     void Start()
     {
         // Ensure the GuideBox is hidden initially
-        guideBox.SetActive(false);
-
+        //guideBox.SetActive(false);
+        Debug.Log("Jennie test 0");
         if (guideboxTransform != null)
         {
             // Set the initial and target positions
-            initialPosition = guideboxTransform.position + new Vector3(0, 1, 0);
+            initialPosition = guideboxTransform.position;
             targetPosition = initialPosition + new Vector3(0, hightToFloatUp, 0);
             guideBox.transform.position = initialPosition;
         }
@@ -37,10 +37,25 @@ public class GuideBoxController : MonoBehaviour
     public void ShowMessage(string message)
     {
         textbox.text = message;
+        Debug.Log("Jennie test 1");
         guideBox.SetActive(true);
-        guideBox.transform.LookAt(Camera.main.transform);
-        guideBox.transform.Rotate(180, 0, 0);
-        StartCoroutine(GlideToPosition(targetPosition));
+        Debug.Log("Jennie test 2");
+
+        var transf = Camera.main.transform;
+        Vector3 ycamera = new Vector3(transf.position.x, transf.position.y, transf.position.z);
+        //guideBox.transform.LookAt(Camera.main.transform);
+        //guideBox.transform.Rotate(180, 0, 0);
+        //StartCoroutine(GlideToPosition(targetPosition));
+
+        StartCoroutine(ChangeText());
+    }
+
+    IEnumerator ChangeText()
+    {
+        yield return new WaitForSeconds(40);
+        textbox.text = "Nice! Whenether you are ready, click on the Lock button.";
+
+        //guideBox.SetActive(true);
     }
 
     // Function to hide the GuideBox
@@ -65,10 +80,10 @@ public class GuideBoxController : MonoBehaviour
 
         guideBox.transform.position = targetPos;
 
-        if (!showing)
-        {
-            guideBox.SetActive(false);
-        }
+        //if (!showing)
+        //{
+        //    guideBox.SetActive(false);
+        //}
     }
 
     // Update is called once per frame

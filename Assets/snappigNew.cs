@@ -9,6 +9,7 @@ public class snappingNew : MonoBehaviour
     private Vector3 rayDirection;
     [SerializeField] private GameObject theObjectYouWantToPlace;
 
+    public Transform _rayOrigin;
     private OVRCameraRig _cameraRig;
 
     public Transform rightHandTransform;
@@ -49,11 +50,12 @@ public class snappingNew : MonoBehaviour
 
     private Ray GetControllerRay()
     {
-        Vector3 rayOrigin;
-        Vector3 rayDirection;
+        Vector3 rayOrigin = _rayOrigin.transform.position;
+        Quaternion Rotation = _rayOrigin.transform.rotation;
+        Vector3 rayDirection = Rotation * Vector3.forward;
 
-        rayOrigin = _cameraRig.rightHandAnchor.GetComponentInChildren<OVRHand>().PointerPose.position;
-        rayDirection = _cameraRig.rightHandAnchor.GetComponentInChildren<OVRHand>().PointerPose.forward;
+        //rayOrigin = _cameraRig.rightHandAnchor.GetComponentInChildren<OVRHand>().PointerPose.position;
+        //rayDirection = _cameraRig.rightHandAnchor.GetComponentInChildren<OVRHand>().PointerPose.forward;
         //rayOrigin = rightHand.PointerPose.localPosition;
         //rayDirection = rightHand.PointerPose.forward * -1;
 

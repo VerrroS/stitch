@@ -41,6 +41,7 @@ public class AnchorIT : MonoBehaviour
 
     public void Start()
     {
+        // find 
         
 
 
@@ -97,13 +98,12 @@ public class AnchorIT : MonoBehaviour
 
             Debug.Log("Instantiating");
             effectMesh.CreateEffectMesh(newAnchor);
-            GameBoxInfoGuide.GetComponent<GuideBoxController>().ShowMessage("Take out the pattern pieces from the shirt and lay them on your desk.");
 
 
             var spawnPosition = newAnchor.transform.position;
             var spawnRotation = newAnchor.transform.rotation * Quaternion.Euler(-90, 0, 0);
             
-            tShirtinstance = Instantiate(tableUi, spawnPosition, spawnRotation, newAnchor.transform);
+            tShirtinstance = Instantiate(tableUi, spawnPosition + new Vector3(0,0.2f,0f), spawnRotation, newAnchor.transform);
             curUiCol = tShirtinstance.GetComponentInChildren<UiCollider>();
             curUiCol.placeWorkspace.AddListener(OnPlaceWorkspace);
             Debug.Log("uiCol found?" + curUiCol);
@@ -123,9 +123,12 @@ public class AnchorIT : MonoBehaviour
         var spawnPosition = currentAnchor.transform.position + offset;
         var spawnRotation = currentAnchor.transform.rotation;
         Destroy(tShirtinstance);
-        tShirtinstance = Instantiate(tableWorkspace, spawnPosition, spawnRotation * Quaternion.Euler(0, 90, 90), currentAnchor.transform);
+        tShirtinstance = Instantiate(tableWorkspace, spawnPosition + new Vector3(0,0.2f,0), spawnRotation * Quaternion.Euler(0, 90, 90), currentAnchor.transform);
+        Debug.Log("Jennie test 2");
 
-
+        GameBoxInfoGuide = tShirtinstance.GetComponentInChildren<GuideBoxController>().gameObject;
+        GameBoxInfoGuide.GetComponent<GuideBoxController>().ShowMessage("Take out the pattern pieces from the shirt and lay them on your desk.");
+        Debug.Log(GameBoxInfoGuide);
 
 
         GameObject go = currentAnchor.gameObject.transform.GetChild(0).gameObject;

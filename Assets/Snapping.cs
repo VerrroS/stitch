@@ -32,7 +32,7 @@ public class Snapping : MonoBehaviour
 
 
         // Set the object's position to keep x and z the same, but adjust the y position
-        Vector3 newPosition = new Vector3(patternTransform.position.x, (tableTopY + snapOffset)/2 + 0.05f, patternTransform.position.z);
+        Vector3 newPosition = new Vector3(patternTransform.position.x, (tableTopY + snapOffset)/2 + 0.17f, patternTransform.position.z);
 
   
         // Call the Snap function of PatternPart to set the final position
