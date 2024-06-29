@@ -27,10 +27,10 @@ public class AnchorIT : MonoBehaviour
 
 
     EffectMeshObject efMesh= null;
-    MRUKAnchor currentAnchor = null;
+    public MRUKAnchor currentAnchor = null;
     MRUKRoom room = null;
 
-    private bool tableInitialized = false;
+    public bool tableInitialized = false;
 
 
     private UiCollider curUiCol;
@@ -123,7 +123,7 @@ public class AnchorIT : MonoBehaviour
         var spawnPosition = currentAnchor.transform.position + offset;
         var spawnRotation = currentAnchor.transform.rotation;
         Destroy(tShirtinstance);
-        tShirtinstance = Instantiate(tableWorkspace, spawnPosition, spawnRotation * Quaternion.Euler(0, 0, 165), currentAnchor.transform);
+        tShirtinstance = Instantiate(tableWorkspace, spawnPosition, spawnRotation * Quaternion.Euler(0, 90, 90), currentAnchor.transform);
 
 
 
@@ -131,7 +131,9 @@ public class AnchorIT : MonoBehaviour
         GameObject go = currentAnchor.gameObject.transform.GetChild(0).gameObject;
         Debug.Log("Child found?" + go.name);
         go.GetComponent<MeshRenderer>().enabled = false;
-
+        var col = go.AddComponent<BoxCollider>();
+        col.isTrigger = true;
+        go.AddComponent<Snapping>();
 
         //effectMesh.DestroyMesh(currentAnchor);
         tableInitialized = true;

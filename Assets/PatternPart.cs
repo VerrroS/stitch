@@ -4,16 +4,15 @@ using Oculus.Interaction;
 using Oculus.Interaction.HandGrab;
 using UnityEngine;
 using UnityEngine.Events;
+using static Oculus.Interaction.OneGrabTranslateTransformer;
 
 public class PatternPart : MonoBehaviour
 {
     public GameObject flatPatternVisual;
+    public GameObject flatPatternVisualOnTable;
     public GameObject spatialPatternVisual;
     public GameObject particleEffect;
 
-    public UnityEvent OnGrabbedEvent;
-
-    public Rigidbody rigigtBody;
     public GameObject StaticSpatialPatternVisual;
     public MeshCollider meshCollider;
     public BoxCollider boxCollider;
@@ -22,6 +21,16 @@ public class PatternPart : MonoBehaviour
     private Vector3 initialPosition;
     private Quaternion initialRotation;
 
+    public bool isSnapped = false;
+    private bool isGrabbed = false;
+
+
+
+    private void Awake()
+    {
+        // Listen to lock event
+    }
+
     void Start()
     {
         spatialPatternVisual.SetActive(true);
@@ -29,50 +38,53 @@ public class PatternPart : MonoBehaviour
         flatPatternVisual.SetActive(false);
         particleEffect.SetActive(false);
 
-        OnGrabbedEvent.AddListener(HandleGrabbed);
         initialPosition = flatPatternVisual.transform.position;
         initialRotation = flatPatternVisual.transform.rotation;
+
+        flatPatternVisualOnTable.SetActive(false);
     }
 
     private void HandleGrabbed()
     {
+        isGrabbed = true;
         StaticSpatialPatternVisual.SetActive(true);
         StartCoroutine(ConvertTo2D());
-        StartCoroutine(SpnapBackTo3D());
+        StartCoroutine(SnapBackTo3D());
     }
 
     private IEnumerator ConvertTo2D()
     {
         yield return new WaitForSeconds(2);
-        meshCollider.enabled = false;
         particleEffect.SetActive(true);
+        particleEffect.GetComponent<ParticleSystem>().Play();
         spatialPatternVisual.SetActive(false);
         flatPatternVisual.SetActive(true);
-        rigigtBody.isKinematic = false;
         boxCollider.enabled = true;
+        meshCollider.enabled = false;
     }
 
-    private IEnumerator SpnapBackTo3D()
+    private IEnumerator SnapBackTo3D()
     {
         yield return new WaitForSeconds(15);
-        ConvertTo3D();
+        if (!isSnapped)
+        {
+            ConvertTo3D();
+        }
     }
 
     private void ConvertTo3D()
     {
+        StopAllCoroutines();
         boxCollider.enabled = false;
-        rigigtBody.isKinematic = true;
-        rigigtBody.gameObject.transform.position = Vector3.zero;
-        rigigtBody.gameObject.transform.rotation = Quaternion.identity;
-        
+
         // Reset the position of the spatial pattern visual
         spatialPatternVisual.transform.position = StaticSpatialPatternVisual.transform.position;
         spatialPatternVisual.transform.rotation = StaticSpatialPatternVisual.transform.rotation;
-        
+
         // Reset the position and rotation of flatPatternVisual
         flatPatternVisual.transform.position = initialPosition;
         flatPatternVisual.transform.rotation = initialRotation;
-        
+
         spatialPatternVisual.SetActive(true);
         flatPatternVisual.SetActive(false);
         StaticSpatialPatternVisual.SetActive(false);
@@ -81,17 +93,35 @@ public class PatternPart : MonoBehaviour
 
     public void OnGrabbed()
     {
-        OnGrabbedEvent.Invoke();
+        if (!isGrabbed && !isSnapped) // Only invoke if not already grabbed
+        {
+            HandleGrabbed();
+        }
+    }
+
+    public void OnReleased()
+    {
+        if (isGrabbed) // Only stop if it was grabbed
+        {
+            isGrabbed = false;
+            StopCoroutine(ConvertTo2D());
+        }
     }
 
     public void Update()
     {
-        // debug if key g is pressed grab the object
-        if (Input.GetKeyDown(KeyCode.G))
+        if (handGrabInteractable.State == InteractableState.Select && !isGrabbed)
         {
             OnGrabbed();
         }
-        if (handGrabInteractable.State == InteractableState.Select)
+
+        if (handGrabInteractable.State == InteractableState.Normal && isGrabbed)
+        {
+            OnReleased();
+        }
+
+        // Debugging keys to simulate grabbing and releasing
+        if (Input.GetKeyDown(KeyCode.G))
         {
             OnGrabbed();
         }
@@ -100,5 +130,33 @@ public class PatternPart : MonoBehaviour
         {
             ConvertTo3D();
         }
+    }
+
+    public void Snap(Vector3 newPosition)
+    {
+        handGrabInteractable.enabled = false;
+        flatPatternVisual.SetActive(false);
+      
+
+        OneGrabTranslateConstraints constraints = new OneGrabTranslateConstraints();
+        constraints.MinY = new FloatConstraint();
+        constraints.MaxY = new FloatConstraint();
+        constraints.MinY.Constrain = true;
+        constraints.MaxY.Constrain = true;
+        constraints.MinY.Value = newPosition.y;
+        constraints.MaxY.Value = newPosition.y;
+        // Set constraints to lock on y axis of the new position
+        flatPatternVisualOnTable.GetComponent<OneGrabTranslateTransformer>().InjectOptionalConstraints(constraints);
+
+        flatPatternVisualOnTable.transform.position = newPosition;
+        flatPatternVisualOnTable.SetActive(true);
+        //flatPatternVisualOnTable.transform.rotation = newRotation;
+        isSnapped = true;
+
+        }
+
+    private void Lock()
+    {
+        gameObject.GetComponentInChildren<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
     }
 }
