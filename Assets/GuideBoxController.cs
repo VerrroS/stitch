@@ -10,7 +10,6 @@ public class GuideBoxController : MonoBehaviour
     // Reference to the TextMeshProUGUI component inside the Textbox GameObject
     public TextMeshProUGUI textbox;
     public Transform guideboxTransform;
-    private Renderer guideBoxRenderer;
 
     private Vector3 initialPosition;
     private Vector3 targetPosition;
@@ -24,9 +23,6 @@ public class GuideBoxController : MonoBehaviour
     {
         // Ensure the GuideBox is hidden initially
         guideBox.SetActive(false);
-
-        // Get the Renderer component for the GuideBox
-        guideBoxRenderer = guideBox.GetComponent<Renderer>();
 
         if (guideboxTransform != null)
         {
@@ -44,44 +40,17 @@ public class GuideBoxController : MonoBehaviour
         guideBox.SetActive(true);
         guideBox.transform.LookAt(Camera.main.transform);
         guideBox.transform.Rotate(180, 0, 0);
-        StartCoroutine(GlideAndFadeIn(targetPosition));
+        StartCoroutine(GlideToPosition(targetPosition));
     }
 
     // Function to hide the GuideBox
     public void HideMessage()
     {
-        StartCoroutine(GlideBack(initialPosition));
+        StartCoroutine(GlideToPosition(initialPosition, false));
     }
 
-    // Coroutine to glide and fade in the GuideBox to a target position
-    private IEnumerator GlideAndFadeIn(Vector3 targetPos)
-    {
-        float elapsedTime = 0;
-
-        Vector3 startingPos = guideBox.transform.position;
-        Color startColor = guideBoxRenderer.material.color;
-        Color targetColor = new Color(startColor.r, startColor.g, startColor.b, 1);
-
-        Color textStartColor = textbox.color;
-        Color textTargetColor = new Color(textStartColor.r, textStartColor.g, textStartColor.b, 1);
-
-        while (elapsedTime < glideDuration)
-        {
-            float t = elapsedTime / glideDuration;
-            guideBox.transform.position = Vector3.Lerp(startingPos, targetPos, t);
-            guideBoxRenderer.material.color = Color.Lerp(new Color(startColor.r, startColor.g, startColor.b, 0), targetColor, t);
-            textbox.color = Color.Lerp(new Color(textStartColor.r, textStartColor.g, textStartColor.b, 0), textTargetColor, t);
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        guideBox.transform.position = targetPos;
-        guideBoxRenderer.material.color = targetColor;
-        textbox.color = textTargetColor;
-    }
-
-    // Coroutine to glide the GuideBox back to initial position
-    private IEnumerator GlideBack(Vector3 targetPos)
+    // Coroutine to glide the GuideBox to a target position
+    private IEnumerator GlideToPosition(Vector3 targetPos, bool showing = true)
     {
         float elapsedTime = 0;
 
@@ -89,14 +58,17 @@ public class GuideBoxController : MonoBehaviour
 
         while (elapsedTime < glideDuration)
         {
-            float t = elapsedTime / glideDuration;
-            guideBox.transform.position = Vector3.Lerp(startingPos, targetPos, t);
+            guideBox.transform.position = Vector3.Lerp(startingPos, targetPos, elapsedTime / glideDuration);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
         guideBox.transform.position = targetPos;
-        guideBox.SetActive(false);
+
+        if (!showing)
+        {
+            guideBox.SetActive(false);
+        }
     }
 
     // Update is called once per frame
