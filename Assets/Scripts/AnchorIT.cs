@@ -22,7 +22,7 @@ public class AnchorIT : MonoBehaviour
     public float rayLength = 10;
     public MRUKAnchor.SceneLabels labelFilter;
     private GameObject tShirtinstance = null;
-
+    public UiCollider uiCollider;
 
 
     EffectMeshObject efMesh= null;
@@ -32,12 +32,18 @@ public class AnchorIT : MonoBehaviour
     private bool tableInitialized = false;
 
 
-    public GameObject SpawnObject;
+    private UiCollider curUiCol;
+
+    public GameObject tableUi;
+    public GameObject tableWorkspace;
     // Update is called once per frame
 
     public void Start()
     {
-        room = MRUK.Instance.GetCurrentRoom();
+        
+
+
+
     }
     void Update()
     {
@@ -84,20 +90,46 @@ public class AnchorIT : MonoBehaviour
         {
             if (tShirtinstance != null)
             {
+                curUiCol.placeWorkspace.RemoveListener(OnPlaceWorkspace);
                 Destroy(tShirtinstance); // Destroy the previous instance if it exists
             }
 
             Debug.Log("Instantiating");
             effectMesh.CreateEffectMesh(newAnchor);
-
+            
             var spawnPosition = newAnchor.transform.position;
             var spawnRotation = newAnchor.transform.rotation * Quaternion.Euler(-90, 0, 0);
+            
+            tShirtinstance = Instantiate(tableUi, spawnPosition, spawnRotation, newAnchor.transform);
+            curUiCol = tShirtinstance.GetComponentInChildren<UiCollider>();
+            curUiCol.placeWorkspace.AddListener(OnPlaceWorkspace);
+            Debug.Log("uiCol found?" + curUiCol);
 
-            tShirtinstance = Instantiate(SpawnObject, spawnPosition, spawnRotation, newAnchor.transform);
             currentAnchor = newAnchor;
         }
     }
 
+    private void OnPlaceWorkspace()
+    {
+        Debug.Log("Placing workspace");
+
+        curUiCol.placeWorkspace.RemoveListener(OnPlaceWorkspace);
+
+        Vector3 offset = currentAnchor.transform.right * -1.0f + currentAnchor.transform.forward * -0.5f;
+
+        var spawnPosition = currentAnchor.transform.position + offset;
+        var spawnRotation = currentAnchor.transform.rotation;
+        Destroy(tShirtinstance);
+        tShirtinstance = Instantiate(tableWorkspace, spawnPosition, spawnRotation, currentAnchor.transform);
 
 
+
+        GameObject go = currentAnchor.gameObject.transform.GetChild(0).gameObject;
+        Debug.Log("Child found?" + go.name);
+        go.GetComponent<MeshRenderer>().enabled = false;
+
+
+        //effectMesh.DestroyMesh(currentAnchor);
+        tableInitialized = true;
+    }
 }

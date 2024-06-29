@@ -13690,6 +13690,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3495834862866537468, guid: fe30613bbc2cfa94c915cebb7e662a97, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -14084,7 +14088,9 @@ MonoBehaviour:
   rayStartPoint: {fileID: 1531499722}
   rayLength: 10
   labelFilter: 8
-  SpawnObject: {fileID: 7876947946711402811, guid: af7bc3e7cf306fa479b257d42a4a591b, type: 3}
+  uiCollider: {fileID: 0}
+  tableUi: {fileID: 7876947946711402811, guid: af7bc3e7cf306fa479b257d42a4a591b, type: 3}
+  tableWorkspace: {fileID: 7837259956898625820, guid: 4faf110b17c6a584da8563eeb9e95fe6, type: 3}
 --- !u!4 &1270302024
 Transform:
   m_ObjectHideFlags: 0
@@ -22269,7 +22275,7 @@ Transform:
   m_GameObject: {fileID: 2061399165}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.357, y: 0.642, z: -1.047}
+  m_LocalPosition: {x: -2.164, y: 0.642, z: -3.122}
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -23273,6 +23279,7 @@ SceneRoots:
   - {fileID: 2057271740}
   - {fileID: 1006146027}
   - {fileID: 2061399171}
+  - {fileID: 1348449886}
   - {fileID: 219534093}
   - {fileID: 1592683703}
   - {fileID: 1444291525}
@@ -23280,9 +23287,8 @@ SceneRoots:
   - {fileID: 764400875}
   - {fileID: 1217924373}
   - {fileID: 130069464}
-  - {fileID: 1348449886}
-  - {fileID: 1270302024}
   - {fileID: 1713439785}
   - {fileID: 1935016764721440356}
   - {fileID: 7510935076318395795}
   - {fileID: 1504095256}
+  - {fileID: 1270302024}

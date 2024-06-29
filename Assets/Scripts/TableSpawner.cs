@@ -15,6 +15,7 @@ public class TableSpawner : MonoBehaviour
 
     void Start()
     {
+        // THATS ALL OLD NOT USED CODE
         ChooseNearestTable();
     }
 
