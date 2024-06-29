@@ -15,6 +15,7 @@ public class AnchorIT : MonoBehaviour
     public Transform playerHead;
     public EffectMesh effectMesh;
     public GameObject chooseTableButton;
+    public GameObject GameBoxInfoGuide;
 
 
 
@@ -96,7 +97,9 @@ public class AnchorIT : MonoBehaviour
 
             Debug.Log("Instantiating");
             effectMesh.CreateEffectMesh(newAnchor);
-            
+            GameBoxInfoGuide.GetComponent<GuideBoxController>().ShowMessage("Take out the pattern pieces from the shirt and lay them on your desk.");
+
+
             var spawnPosition = newAnchor.transform.position;
             var spawnRotation = newAnchor.transform.rotation * Quaternion.Euler(-90, 0, 0);
             
@@ -121,6 +124,7 @@ public class AnchorIT : MonoBehaviour
         var spawnRotation = currentAnchor.transform.rotation;
         Destroy(tShirtinstance);
         tShirtinstance = Instantiate(tableWorkspace, spawnPosition, spawnRotation * Quaternion.Euler(0, 0, 165), currentAnchor.transform);
+
 
 
 
