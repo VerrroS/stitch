@@ -5485,6 +5485,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2243203816230009451, guid: 3389124696dc85946b7e3cc436b9ec8b, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6410941652917951208, guid: 3389124696dc85946b7e3cc436b9ec8b, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.954
@@ -5528,6 +5532,10 @@ PrefabInstance:
     - target: {fileID: 7171235350801679841, guid: 3389124696dc85946b7e3cc436b9ec8b, type: 3}
       propertyPath: m_Name
       value: SpawnTShirt
+      objectReference: {fileID: 0}
+    - target: {fileID: 7171235350801679841, guid: 3389124696dc85946b7e3cc436b9ec8b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -11793,6 +11801,7 @@ MonoBehaviour:
   targetObject: {fileID: 0}
   objectToAlign: {fileID: 1746880410}
   offset: 0.001
+  desiredYRotationOffset: 0
 --- !u!1 &1017546874
 GameObject:
   m_ObjectHideFlags: 0

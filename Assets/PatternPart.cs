@@ -8,8 +8,8 @@ using static Oculus.Interaction.OneGrabTranslateTransformer;
 
 public class PatternPart : MonoBehaviour
 {
-    public GameObject flatPatternVisual;
-    public GameObject spatialPatternVisual;
+    public GameObject flatPatternVisual; //2d
+    public GameObject spatialPatternVisual; //3d
     public GameObject particleEffect;
 
     public GameObject StaticSpatialPatternVisual;
@@ -42,13 +42,15 @@ public class PatternPart : MonoBehaviour
 
     public void Initialize()
     {
+        
         spatialPatternVisual.SetActive(true);
     }
 
-    public void Hide()
-    {
-        spatialPatternVisual.SetActive(false);
-    }
+    //public void Hide()
+    //{
+    //    spatialPatternVisual.GetComponent<MeshRenderer>().enabled = true;
+    //    //spatialPatternVisual.SetActive(false);
+    //}
 
     private void HandleGrabbed()
     {
@@ -56,7 +58,7 @@ public class PatternPart : MonoBehaviour
         {
             return;
         }
-        isGrabbed = true;
+        isGrabbed = true;       
         StaticSpatialPatternVisual.SetActive(true);
         StartCoroutine(ConvertTo2D());
         //StartCoroutine(SnapBackTo3D());
@@ -67,10 +69,12 @@ public class PatternPart : MonoBehaviour
         yield return new WaitForSeconds(2);
         particleEffect.SetActive(true);
         particleEffect.GetComponent<ParticleSystem>().Play();
-        spatialPatternVisual.SetActive(false);
+        //spatialPatternVisual.SetActive(false);
+        spatialPatternVisual.GetComponent<MeshRenderer>().enabled = false;
+        spatialPatternVisual.GetComponent<MeshCollider>().enabled = true;
         flatPatternVisual.SetActive(true);
         boxCollider.enabled = true;
-        meshCollider.enabled = false;
+        //meshCollider.enabled = false;
         OnTransformed?.Invoke();
     }
     
