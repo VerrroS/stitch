@@ -26,11 +26,13 @@ public class AnchorIT : MonoBehaviour
     public UiCollider uiCollider;
 
 
-    EffectMeshObject efMesh= null;
+    EffectMeshObject efMesh = null;
     public MRUKAnchor currentAnchor = null;
     MRUKRoom room = null;
 
     public bool tableInitialized = false;
+
+    public AlignToObject alignToObject;
 
 
     private UiCollider curUiCol;
@@ -39,10 +41,12 @@ public class AnchorIT : MonoBehaviour
     public GameObject tableWorkspace;
     // Update is called once per frame
 
+    public static event System.Action OnChoosenWorkspace;
+
     public void Start()
     {
         // find 
-        
+
 
 
 
@@ -65,7 +69,7 @@ public class AnchorIT : MonoBehaviour
 
         Ray ray = new Ray(origin, direction);
         Debug.DrawRay(ray.origin, ray.direction * rayLength, Color.red);
-    
+
         bool hasHit = room.Raycast(ray, rayLength, LabelFilter.FromEnum(labelFilter), out RaycastHit hit, out MRUKAnchor newAnchor);
         if (hasHit)
         {
@@ -102,8 +106,8 @@ public class AnchorIT : MonoBehaviour
 
             var spawnPosition = newAnchor.transform.position;
             var spawnRotation = newAnchor.transform.rotation * Quaternion.Euler(-90, 0, 0);
-            
-            tShirtinstance = Instantiate(tableUi, spawnPosition + new Vector3(0,0.2f,0f), spawnRotation, newAnchor.transform);
+
+            tShirtinstance = Instantiate(tableUi, spawnPosition + new Vector3(0, 0.2f, 0f), spawnRotation, newAnchor.transform);
             curUiCol = tShirtinstance.GetComponentInChildren<UiCollider>();
             curUiCol.placeWorkspace.AddListener(OnPlaceWorkspace);
             Debug.Log("uiCol found?" + curUiCol);
@@ -123,7 +127,7 @@ public class AnchorIT : MonoBehaviour
         var spawnPosition = currentAnchor.transform.position + offset;
         var spawnRotation = currentAnchor.transform.rotation;
         Destroy(tShirtinstance);
-        tShirtinstance = Instantiate(tableWorkspace, spawnPosition + new Vector3(0,0.2f,0), spawnRotation * Quaternion.Euler(0, 90, 90), currentAnchor.transform);
+        tShirtinstance = Instantiate(tableWorkspace, spawnPosition + new Vector3(0, 0.2f, 0), spawnRotation * Quaternion.Euler(0, 90, 90), currentAnchor.transform);
         Debug.Log("Jennie test 2");
 
         GameBoxInfoGuide = tShirtinstance.GetComponentInChildren<GuideBoxController>().gameObject;
@@ -135,10 +139,11 @@ public class AnchorIT : MonoBehaviour
         Debug.Log("Child found?" + go.name);
         go.GetComponent<MeshRenderer>().enabled = false;
         var col = go.AddComponent<BoxCollider>();
-        col.isTrigger = true;
-        go.AddComponent<Snapping>();
+        //col.isTrigger = true;
+        alignToObject.AlignObject(col.gameObject);
 
         //effectMesh.DestroyMesh(currentAnchor);
         tableInitialized = true;
+        OnChoosenWorkspace?.Invoke();
     }
 }

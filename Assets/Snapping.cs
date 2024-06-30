@@ -6,6 +6,7 @@ public class Snapping : MonoBehaviour
 {
     public float snapOffset = 0; // Adjustable offset to keep a small distance above the table
 
+    public static event System.Action OnSnapped;
     private void OnTriggerEnter(Collider other)
     {
         // Check if the other object has the tag "2DPattern"
@@ -39,7 +40,9 @@ public class Snapping : MonoBehaviour
         PatternPart patternPart = patternTransform.GetComponentInParent<PatternPart>();
         if (patternPart != null && !patternPart.isSnapped)
         {
-            patternPart.Snap(newPosition);
+            //patternPart.Snap(newPosition);
         }
+
+        OnSnapped?.Invoke();
     }
 }

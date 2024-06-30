@@ -9,7 +9,6 @@ using static Oculus.Interaction.OneGrabTranslateTransformer;
 public class PatternPart : MonoBehaviour
 {
     public GameObject flatPatternVisual;
-    public GameObject flatPatternVisualOnTable;
     public GameObject spatialPatternVisual;
     public GameObject particleEffect;
 
@@ -24,32 +23,43 @@ public class PatternPart : MonoBehaviour
     public bool isSnapped = false;
     private bool isGrabbed = false;
 
+    public static event System.Action OnTransformed;
 
 
-    private void Awake()
+    public void Start()
     {
-        // Listen to lock event
-    }
-
-    void Start()
-    {
-        spatialPatternVisual.SetActive(true);
+        //Hide();
         StaticSpatialPatternVisual.SetActive(false);
         flatPatternVisual.SetActive(false);
         particleEffect.SetActive(false);
 
         initialPosition = flatPatternVisual.transform.position;
         initialRotation = flatPatternVisual.transform.rotation;
+        //AnchorIT.TshirtInitialized += Initialize;
+        //AnchorIT.TshirtHide += Hide;
 
-        flatPatternVisualOnTable.SetActive(false);
+    }
+
+    public void Initialize()
+    {
+        spatialPatternVisual.SetActive(true);
+    }
+
+    public void Hide()
+    {
+        spatialPatternVisual.SetActive(false);
     }
 
     private void HandleGrabbed()
     {
+        if (isGrabbed)
+        {
+            return;
+        }
         isGrabbed = true;
         StaticSpatialPatternVisual.SetActive(true);
         StartCoroutine(ConvertTo2D());
-        StartCoroutine(SnapBackTo3D());
+        //StartCoroutine(SnapBackTo3D());
     }
 
     private IEnumerator ConvertTo2D()
@@ -61,8 +71,9 @@ public class PatternPart : MonoBehaviour
         flatPatternVisual.SetActive(true);
         boxCollider.enabled = true;
         meshCollider.enabled = false;
+        OnTransformed?.Invoke();
     }
-
+    
     private IEnumerator SnapBackTo3D()
     {
         yield return new WaitForSeconds(15);
@@ -93,7 +104,7 @@ public class PatternPart : MonoBehaviour
 
     public void OnGrabbed()
     {
-        if (!isGrabbed && !isSnapped) // Only invoke if not already grabbed
+        if (!isGrabbed) // Only invoke if not already grabbed
         {
             HandleGrabbed();
         }
@@ -110,14 +121,9 @@ public class PatternPart : MonoBehaviour
 
     public void Update()
     {
-        if (handGrabInteractable.State == InteractableState.Select && !isGrabbed)
+        if (handGrabInteractable.State == InteractableState.Select)
         {
             OnGrabbed();
-        }
-
-        if (handGrabInteractable.State == InteractableState.Normal && isGrabbed)
-        {
-            OnReleased();
         }
 
         // Debugging keys to simulate grabbing and releasing
@@ -130,33 +136,5 @@ public class PatternPart : MonoBehaviour
         {
             ConvertTo3D();
         }
-    }
-
-    public void Snap(Vector3 newPosition)
-    {
-        handGrabInteractable.enabled = false;
-        flatPatternVisual.SetActive(false);
-      
-
-        OneGrabTranslateConstraints constraints = new OneGrabTranslateConstraints();
-        constraints.MinY = new FloatConstraint();
-        constraints.MaxY = new FloatConstraint();
-        constraints.MinY.Constrain = true;
-        constraints.MaxY.Constrain = true;
-        constraints.MinY.Value = newPosition.y;
-        constraints.MaxY.Value = newPosition.y;
-        // Set constraints to lock on y axis of the new position
-        flatPatternVisualOnTable.GetComponent<OneGrabTranslateTransformer>().InjectOptionalConstraints(constraints);
-
-        flatPatternVisualOnTable.transform.position = newPosition;
-        flatPatternVisualOnTable.SetActive(true);
-        //flatPatternVisualOnTable.transform.rotation = newRotation;
-        isSnapped = true;
-
-        }
-
-    private void Lock()
-    {
-        gameObject.GetComponentInChildren<Rigidbody>().constraints = RigidbodyConstraints.FreezeAll;
     }
 }
