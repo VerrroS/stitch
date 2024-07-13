@@ -8,13 +8,8 @@ using static Oculus.Interaction.OneGrabTranslateTransformer;
 
 public class PatternPart : MonoBehaviour
 {
-    public GameObject flatPatternVisual; //2d
     public GameObject spatialPatternVisual; //3d
     public GameObject particleEffect;
-
-    public GameObject StaticSpatialPatternVisual;
-    public MeshCollider meshCollider;
-    public BoxCollider boxCollider;
 
     public HandGrabInteractable handGrabInteractable;
     private Vector3 initialPosition;
@@ -24,33 +19,37 @@ public class PatternPart : MonoBehaviour
     private bool isGrabbed = false;
 
     public static event System.Action OnTransformed;
+    public static event System.Action<HandGrabInteractable> OnTransformedGrab;
 
+    [SerializeField] private float transformDuration = 1f;
+    [SerializeField] private float snapBackDuration = 15f;
+
+    [SerializeField] private  Material transparentMaterial;
+     private GameObject StaticSpatialPatternVisual;
+     [SerializeField] private GameObject flatPatternVisualPrefab;
+    private GameObject flatPatternVisual;
 
     public void Start()
     {
-        //Hide();
-        StaticSpatialPatternVisual.SetActive(false);
-        flatPatternVisual.SetActive(false);
-        particleEffect.SetActive(false);
-
-        initialPosition = flatPatternVisual.transform.position;
-        initialRotation = flatPatternVisual.transform.rotation;
-        //AnchorIT.TshirtInitialized += Initialize;
-        //AnchorIT.TshirtHide += Hide;
-
+        Initialize();
     }
 
     public void Initialize()
     {
-        
+        particleEffect.SetActive(false);
         spatialPatternVisual.SetActive(true);
-    }
 
-    //public void Hide()
-    //{
-    //    spatialPatternVisual.GetComponent<MeshRenderer>().enabled = true;
-    //    //spatialPatternVisual.SetActive(false);
-    //}
+        // copy spatialPatternVisual and call it StaticSpatialPatternVisual, make it inactive to have a copy of the original part, that will stay in the same position
+        StaticSpatialPatternVisual = Instantiate(spatialPatternVisual, spatialPatternVisual.transform.position, spatialPatternVisual.transform.rotation);
+        StaticSpatialPatternVisual.SetActive(false);
+        StaticSpatialPatternVisual.GetComponent<MeshRenderer>().material = transparentMaterial;
+
+        // instantiate the flatPatternVisual and make it inactive
+        flatPatternVisual = Instantiate(flatPatternVisualPrefab, spatialPatternVisual.transform.position, spatialPatternVisual.transform.rotation);
+        //flatPatternVisual.transform.parent = spatialPatternVisual.transform.parent;
+        // forcegrab the flatPatternVisual
+        flatPatternVisual.SetActive(false);
+    }
 
     private void HandleGrabbed()
     {
@@ -66,21 +65,21 @@ public class PatternPart : MonoBehaviour
 
     private IEnumerator ConvertTo2D()
     {
-        yield return new WaitForSeconds(2);
+        yield return new WaitForSeconds(transformDuration);
         particleEffect.SetActive(true);
         particleEffect.GetComponent<ParticleSystem>().Play();
-        //spatialPatternVisual.SetActive(false);
-        spatialPatternVisual.GetComponent<MeshRenderer>().enabled = false;
-        spatialPatternVisual.GetComponent<MeshCollider>().enabled = true;
+        spatialPatternVisual.SetActive(false);
+        //spatialPatternVisual.GetComponent<MeshRenderer>().enabled = false;
+        //spatialPatternVisual.GetComponent<MeshCollider>().enabled = true;
         flatPatternVisual.SetActive(true);
-        boxCollider.enabled = true;
-        //meshCollider.enabled = false;
         OnTransformed?.Invoke();
+        OnTransformedGrab?.Invoke(flatPatternVisual.GetComponent<HandGrabInteractable>());
+
     }
     
     private IEnumerator SnapBackTo3D()
     {
-        yield return new WaitForSeconds(15);
+        yield return new WaitForSeconds(snapBackDuration);
         if (!isSnapped)
         {
             ConvertTo3D();
@@ -90,8 +89,6 @@ public class PatternPart : MonoBehaviour
     private void ConvertTo3D()
     {
         StopAllCoroutines();
-        boxCollider.enabled = false;
-
         // Reset the position of the spatial pattern visual
         spatialPatternVisual.transform.position = StaticSpatialPatternVisual.transform.position;
         spatialPatternVisual.transform.rotation = StaticSpatialPatternVisual.transform.rotation;
@@ -103,7 +100,6 @@ public class PatternPart : MonoBehaviour
         spatialPatternVisual.SetActive(true);
         flatPatternVisual.SetActive(false);
         StaticSpatialPatternVisual.SetActive(false);
-        meshCollider.enabled = true;
     }
 
     public void OnGrabbed()
